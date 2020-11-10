@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class Modal extends React.Component {
+export default class Repository extends React.Component {
   constructor(props) {
     super(props);
     const repo = this.props.data;
@@ -9,11 +9,11 @@ export default class Modal extends React.Component {
     let newestUrl = "";
     if (repo != null) {
       if (repo.data != null && repo.data.length > 0) {
-        let latest = repo.data[0];
-        let str = latest.created_at;
-        lastReleaseDate = str.split("T")[0];
-        lastVersion = latest.tag_name;
-        newestUrl = latest.html_url;
+        let latest = repo.data[0]; // gets the most recent repo release data, first item in list
+        let str = latest.created_at; // gets release date
+        lastReleaseDate = str.split("T")[0]; // extracts the part of date we need
+        lastVersion = latest.tag_name; // gets version ID
+        newestUrl = latest.html_url; // gets url to newest release
       }
     }
     this.state = {
@@ -24,12 +24,15 @@ export default class Modal extends React.Component {
     };
   }
   delete = () => {
+    // makes call to get this component (repo) removed from the page and local storage
     this.props.deleteRepo(this.props.repoObj.repo);
   };
   seen = () => {
+    // triggers the update to make the last seen date be today
     this.props.seen(this.props.repoObj.repo);
   };
   isNewRelease = () => {
+    // determines if the release date is more recent than the last seen date
     let realeaseDate = this.state.realeaseDate.split("-");
     let seenDate = this.props.repoObj.seen.split("-");
     if (this.state.newRelease === false) return false;
@@ -51,6 +54,7 @@ export default class Modal extends React.Component {
     }
   };
   openNewTab = () => {
+    // opens the release details in new tab
     let newPageUrl = this.state.url;
     window.open(newPageUrl, "_blank");
   };
@@ -67,16 +71,16 @@ export default class Modal extends React.Component {
         <div className="repo-release-date">
           Latest Release: {this.state.realeaseDate}
         </div>
-        {this.isNewRelease() ? (
-          <div className="repo-new-release">
-            <button className="btn-bottom" onClick={this.openNewTab}>
-              New
+        <div>
+          <button className="btn-bottom" onClick={this.openNewTab}>
+            Details
+          </button>
+          {this.isNewRelease() ? (
+            <button className="btn-bottom new" onClick={this.seen}>
+              New! Mark As Seen
             </button>
-            <button className="btn-bottom" onClick={this.seen}>
-              Mark As Seen
-            </button>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     );
   }
